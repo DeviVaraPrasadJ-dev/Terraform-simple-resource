@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         // Jenkins credentials: create an entry called "aws-creds"
+        SLACK_CHANNEL = '#all-na' 
         AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
         AWS_DEFAULT_REGION    = 'ap-southeast-1'
@@ -36,4 +37,25 @@ pipeline {
     }
 
   //post-build actions
+        post {
+        success {
+       slackSend(
+                channel: "${SLACK_CHANNEL}",
+                message: "*SUCCESS:* Job `${env.JOB_NAME}` Build #${env.BUILD_NUMBER} passed ",
+                tokenCredentialId: 'slack-token'
+                )
+        }
+
+        failure {
+            slackSend (
+                channel: "${SLACK_CHANNEL}",
+                message: "*FAILURE:* Job `${env.JOB_NAME}` Build #${env.BUILD_NUMBER} passed ",
+                tokenCredentialId: 'slack-token'
+                )
+        }
+
+        always {
+            echo " Notified on Slack"
+        }
+    }
 }
