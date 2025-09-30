@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+        agent {
+        docker {
+            image 'hashicorp/terraform:1.9.5'
+            args '-u root:root' // optional, ensures workspace is writable
+        }
+    }
 
     environment {
         // Jenkins credentials: create an entry called "aws-creds"
